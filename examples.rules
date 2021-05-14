@@ -1,0 +1,186 @@
+#Pingbed begin
+alert tcp any any -> any any (\
+	msg:"Pingbed simple rule";\
+	content:"GET /default.htm HTTP/1.1|0d 0a|"; offset:0; depth:27;\
+	content:"User-Agent: Windows+NT+5.1|0d 0a|"; distance:0; within: 100;\
+	sid:1;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"Pingbed suricata rule";\
+	http.user_agent; content:"Windows+NT+5.1";\
+	http.uri; content:"default.htm";\
+	sid:2;\
+	rev:1;\
+)
+#Pingbend end
+
+#Taidoor begin
+alert tcp any any -> any any (\
+	msg:"Taidoor simple rule";\
+	content:"111D309GE67E"; offset:24; depth:12;\
+	pcre:"/^GET \/[a-z]{5}\.php\?id=[0-9]{6}111D309GE67E HTTP\/1.1/";\
+	sid:3;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"Taidoor suricata rule";\
+	http.uri; content:"111D309GE67E"; pcre:"/^\/[a-z]{5}\.php\?id=[0-9]{6}111D309GE67E$/";\
+	sid:4;\
+	rev:1;\
+)
+#Taidoor end
+
+#Gh0st-gif begin
+alert tcp any any -> any any (\
+	msg:"Gh0st-gif simple rule";\
+	content:"GET /h.gif?pid ="; offset:0; depth:16;\
+	content:"&v="; distance:3; within:3;\
+	pcre:"/^GET \/h\.gif\?pid =[0-9]{3}&v=[0-9]{12} HTTP\/1\.1/";\
+	sid:5;\
+	rev:1;\
+)
+
+#Currently, http.uri has a bug with parsing uris with spaces on them. See https://redmine.openinfosecfoundation.org/issues/2881
+alert http any any -> any any (\
+	msg:"Gh0st-gif suricata rule";\
+	http.request_line; content:"/h.gif?pid ="; content:"&v="; distance:3; within:3; pcre:"/^GET \/h\.gif\?pid =[0-9]{3}&v=[0-9]{12} HTTP\/1\.1$/";\
+	sid:6;\
+	rev:1;\
+)
+#Gh0st-gif end
+
+#Hupigon begin #TODO: Finish hupigon after dealing with https://forum.suricata.io/t/different-behaviour-between-byte-test-and-content-when-using-flowbits/1361
+alert tcp any any -> any any (\
+	msg:"Hupigon suricata rule - connection setup byte_test (works)";\
+	dsize:4;\
+	byte_test:4,=,0,0;\
+	flowbits:set,hupigon.start;\
+	sid:7;\
+	rev:1;\
+)
+
+alert tcp any any -> any any (\
+	msg:"Hupigon suricata rule - connection setup content (works)";\
+	dsize:4;\
+	content:"|00 00 00 00|"; offset:0; depth:4;\
+	flowbits:set,hupigon.start;\
+	sid:8;\
+	rev:1;\
+)
+
+#Note that byte_extract can only handle 8 bytes in non string mode. There are actually 12 static bytes here
+alert tcp any any -> any any (\
+	msg:"Hupigon suricata rule - beacon byte_test offset 4 (works)";\
+	byte_test:8,=,0xc1d6c1d6c9cfcfdf,4;\
+	flowbits:isset,hupigon.start;\
+	sid:9;\
+	rev:1;\
+)
+
+alert tcp any any -> any any (\
+	msg:"Hupigon suricata rule - beacon byte_test offset 0 (does not work)";\
+	byte_test:8,=,0xc1d6c1d6c9cfcfdf,0;\
+	flowbits:isset,hupigon.start;\
+	sid:10;\
+	rev:1;\
+)
+
+alert tcp any any -> any any (\
+	msg:"Hupigon suricata rule - beacon content offset 0 (works)";\
+	flowbits:isset,hupigon.start;\
+	byte_test:8,=,0xc1d6c1d6c9cfcfdf,0;\
+	sid:11;\
+	rev:1;\
+)
+
+#Hupigon end
+#	flowbits:isnotset,hupigon.start;\
+#	flowbits:noalert;\
+#	byte_test:8,=,0xc1d6c1d6c9cfcfdf,0;\
+#	byte_test:8,=,0xc1d6c1d6c9cfcfdf,212;\
+#	content:"|c1 d6 c1 d6 c9 cf cf df|"; offset:212; depth:8;\
+	#	byte_extract:8,0,hupigon.static_bytes;\
+	#	byte_test:8,=,hupigon.static_bytes,212;\
+	#
+
+
+#Enfal_lurid begin
+alert tls any any -> any any (\
+	msg:"Enfal_lurid suricata rule";\
+	ja3.hash; content:"de350869b8c85de67a350c8d186f11e6";\
+	sid:12;\
+	rev:1;\
+)
+#Enfal_lurid end
+
+#Tapaoux begin
+alert tcp any any -> any any (\
+	msg:"Tapaoux simple rule GET";\
+	content:"GET /ol/yahoo/banner"; offset:0; depth:20;\
+	content:".php?jpg=../"; distance:1; within:12;\
+	sid:13;\
+	rev:1;\
+)
+
+alert tcp any any -> any any (\
+	msg:"Tapaoux simple rule POST";\
+	content:"POST /ol/yahoo/banner"; offset:0; depth:21;\
+	content:".php"; distance:1; within:4;\
+	content:"Content-Disposition: form-data|3b| name=|22|dirname|22 0d 0a 0d 0a|../"; distance:0;\
+	sid:14;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"Tapaoux suricata rule GET";\
+	http.method; content:"GET";\
+	http.uri; content:"/ol/yahoo/banner"; content:".php?jpg=../"; distance:1; within:12;\
+	sid:15;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"Tapaoux suricata rule POST";\
+	http.method; content:"POST";\
+	http.uri; content:"/ol/yahoo/banner"; content:".php"; distance:1; within:4;\
+	http.request_body; content:"Content-Disposition: form-data|3b| name=|22|dirname|22 0d 0a 0d 0a|../";\
+	sid:16;\
+	rev:1;\
+)
+#Tapaoux end
+
+#IXESHE begin
+alert tcp any any -> any any (\
+	msg:"IXESHE simple rule";\
+	content:"GET /AWS96.jsp"; offset:0; depth:14;\
+	content:"x_bigfix_client_string"; distance:2;\
+	sid:17;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"IXESHE suricata rule";\
+	http.uri; content:"/AWS96.jsp";\
+	http.header_names; content:"|0d 0a|x_bigfix_client_string|0d 0a|";\
+	sid:18;\
+	rev:1;\
+)
+#IXESHE end
+
+#Darkcomet begin
+#Note that id= seems to be an email address. Assuming the absolute smallest email address looks like a@b.c results in a minimum base64 length of 8 chars
+#base64_decode is given a large number of bytes, since decoding will end at the end of the buffer anyway
+alert http any any -> any any (\
+	msg:"Darkcomet suricata rule";\
+	http.method; content:"GET";\
+	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; base64_decode: bytes 500, offset 0, relative;\
+	base64_data; content:"@";\
+	sid:19;\
+	rev:1;\
+)
+#	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; base64_decode: bytes 500, offset 0, relative; base64_data; content:"@";\
+#	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; content:"c2ViYWxpQGxpYmVyby5pdA==";\
+#Darkcomet end
