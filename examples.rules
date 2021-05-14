@@ -3,6 +3,8 @@ alert tcp any any -> any any (\
 	msg:"Pingbed simple rule";\
 	content:"GET /default.htm HTTP/1.1|0d 0a|"; offset:0; depth:27;\
 	content:"User-Agent: Windows+NT+5.1|0d 0a|"; distance:0; within: 100;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Pingbed_74fc916a0187f3d491ef9fb0b540f228.pcap;\
 	sid:1;\
 	rev:1;\
 )
@@ -11,6 +13,8 @@ alert http any any -> any any (\
 	msg:"Pingbed suricata rule";\
 	http.user_agent; content:"Windows+NT+5.1";\
 	http.uri; content:"default.htm";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Pingbed_74fc916a0187f3d491ef9fb0b540f228.pcap;\
 	sid:2;\
 	rev:1;\
 )
@@ -21,6 +25,8 @@ alert tcp any any -> any any (\
 	msg:"Taidoor simple rule";\
 	content:"111D309GE67E"; offset:24; depth:12;\
 	pcre:"/^GET \/[a-z]{5}\.php\?id=[0-9]{6}111D309GE67E HTTP\/1.1/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taidoor_40D79D1120638688AC7D9497CC819462_2012-10.pcap;\
 	sid:3;\
 	rev:1;\
 )
@@ -28,6 +34,8 @@ alert tcp any any -> any any (\
 alert http any any -> any any (\
 	msg:"Taidoor suricata rule";\
 	http.uri; content:"111D309GE67E"; pcre:"/^\/[a-z]{5}\.php\?id=[0-9]{6}111D309GE67E$/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taidoor_40D79D1120638688AC7D9497CC819462_2012-10.pcap;\
 	sid:4;\
 	rev:1;\
 )
@@ -39,6 +47,8 @@ alert tcp any any -> any any (\
 	content:"GET /h.gif?pid ="; offset:0; depth:16;\
 	content:"&v="; distance:3; within:3;\
 	pcre:"/^GET \/h\.gif\?pid =[0-9]{3}&v=[0-9]{12} HTTP\/1\.1/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Gh0st-gif_f4d4076dff760eb92e4ae559c2dc4525.pcap;\
 	sid:5;\
 	rev:1;\
 )
@@ -47,6 +57,8 @@ alert tcp any any -> any any (\
 alert http any any -> any any (\
 	msg:"Gh0st-gif suricata rule";\
 	http.request_line; content:"/h.gif?pid ="; content:"&v="; distance:3; within:3; pcre:"/^GET \/h\.gif\?pid =[0-9]{3}&v=[0-9]{12} HTTP\/1\.1$/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Gh0st-gif_f4d4076dff760eb92e4ae559c2dc4525.pcap;\
 	sid:6;\
 	rev:1;\
 )
@@ -58,6 +70,8 @@ alert tcp any any -> any any (\
 	dsize:4;\
 	byte_test:4,=,0,0;\
 	flowbits:set,hupigon.start;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Hupigon_8F90057AB244BD8B612CD09F566EAC0C.pcap;\
 	sid:7;\
 	rev:1;\
 )
@@ -67,6 +81,8 @@ alert tcp any any -> any any (\
 	dsize:4;\
 	content:"|00 00 00 00|"; offset:0; depth:4;\
 	flowbits:set,hupigon.start;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Hupigon_8F90057AB244BD8B612CD09F566EAC0C.pcap;\
 	sid:8;\
 	rev:1;\
 )
@@ -76,6 +92,8 @@ alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - beacon byte_test offset 4 (works)";\
 	byte_test:8,=,0xc1d6c1d6c9cfcfdf,4;\
 	flowbits:isset,hupigon.start;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Hupigon_8F90057AB244BD8B612CD09F566EAC0C.pcap;\
 	sid:9;\
 	rev:1;\
 )
@@ -84,6 +102,8 @@ alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - beacon byte_test offset 0 (does not work)";\
 	byte_test:8,=,0xc1d6c1d6c9cfcfdf,0;\
 	flowbits:isset,hupigon.start;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Hupigon_8F90057AB244BD8B612CD09F566EAC0C.pcap;\
 	sid:10;\
 	rev:1;\
 )
@@ -92,6 +112,8 @@ alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - beacon content offset 0 (works)";\
 	flowbits:isset,hupigon.start;\
 	byte_test:8,=,0xc1d6c1d6c9cfcfdf,0;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Hupigon_8F90057AB244BD8B612CD09F566EAC0C.pcap;\
 	sid:11;\
 	rev:1;\
 )
@@ -111,6 +133,8 @@ alert tcp any any -> any any (\
 alert tls any any -> any any (\
 	msg:"Enfal_lurid suricata rule";\
 	ja3.hash; content:"de350869b8c85de67a350c8d186f11e6";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Enfal_Lurid_0fb1b0833f723682346041d72ed112f9_2013-01.pcap;\
 	sid:12;\
 	rev:1;\
 )
@@ -121,6 +145,8 @@ alert tcp any any -> any any (\
 	msg:"Tapaoux simple rule GET";\
 	content:"GET /ol/yahoo/banner"; offset:0; depth:20;\
 	content:".php?jpg=../"; distance:1; within:12;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Tapaoux_60AF79FB0BD2C9F33375035609C931CB_winver_2011-08-23.pcap;\
 	sid:13;\
 	rev:1;\
 )
@@ -130,6 +156,8 @@ alert tcp any any -> any any (\
 	content:"POST /ol/yahoo/banner"; offset:0; depth:21;\
 	content:".php"; distance:1; within:4;\
 	content:"Content-Disposition: form-data|3b| name=|22|dirname|22 0d 0a 0d 0a|../"; distance:0;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Tapaoux_60AF79FB0BD2C9F33375035609C931CB_winver_2011-08-23.pcap;\
 	sid:14;\
 	rev:1;\
 )
@@ -138,6 +166,8 @@ alert http any any -> any any (\
 	msg:"Tapaoux suricata rule GET";\
 	http.method; content:"GET";\
 	http.uri; content:"/ol/yahoo/banner"; content:".php?jpg=../"; distance:1; within:12;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Tapaoux_60AF79FB0BD2C9F33375035609C931CB_winver_2011-08-23.pcap;\
 	sid:15;\
 	rev:1;\
 )
@@ -147,6 +177,8 @@ alert http any any -> any any (\
 	http.method; content:"POST";\
 	http.uri; content:"/ol/yahoo/banner"; content:".php"; distance:1; within:4;\
 	http.request_body; content:"Content-Disposition: form-data|3b| name=|22|dirname|22 0d 0a 0d 0a|../";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Tapaoux_60AF79FB0BD2C9F33375035609C931CB_winver_2011-08-23.pcap;\
 	sid:16;\
 	rev:1;\
 )
@@ -157,6 +189,8 @@ alert tcp any any -> any any (\
 	msg:"IXESHE simple rule";\
 	content:"GET /AWS96.jsp"; offset:0; depth:14;\
 	content:"x_bigfix_client_string"; distance:2;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_IXESHE_0F88D9B0D237B5FCDC0F985A548254F2-2013-05.pcap;\
 	sid:17;\
 	rev:1;\
 )
@@ -165,22 +199,25 @@ alert http any any -> any any (\
 	msg:"IXESHE suricata rule";\
 	http.uri; content:"/AWS96.jsp";\
 	http.header_names; content:"|0d 0a|x_bigfix_client_string|0d 0a|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_IXESHE_0F88D9B0D237B5FCDC0F985A548254F2-2013-05.pcap;\
 	sid:18;\
 	rev:1;\
 )
 #IXESHE end
 
 #Darkcomet begin
-#Note that id= seems to be an email address. Assuming the absolute smallest email address looks like a@b.c results in a minimum base64 length of 8 chars
+#The id= parameter seems to be a base64 encoded email address. Assuming the absolute smallest email address looks like a@b.c results in a minimum base64 length of 8 chars
 #base64_decode is given a large number of bytes, since decoding will end at the end of the buffer anyway
+#I tried combing pcrexform with base64_decode, but base64_decode doesn't seem to want to use the output buffer from pcrexform
 alert http any any -> any any (\
 	msg:"Darkcomet suricata rule";\
 	http.method; content:"GET";\
-	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; base64_decode: bytes 500, offset 0, relative;\
+	http.uri; content:"id="; base64_decode: bytes 500, offset 0, relative;\
 	base64_data; content:"@";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Darkcomet_DC98ABBA995771480AECF4769A88756E.pcap;\
 	sid:19;\
 	rev:1;\
 )
-#	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; base64_decode: bytes 500, offset 0, relative; base64_data; content:"@";\
-#	http.uri; content:"id="; pcrexform:"id=([a-zA-Z0-9+/=]{8,})$"; content:"c2ViYWxpQGxpYmVyby5pdA==";\
 #Darkcomet end
