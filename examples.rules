@@ -130,6 +130,7 @@ alert tcp any any -> any any (\
 
 
 #Enfal_lurid begin
+#NOTE: This ja3 is also shared by the TrojanPage pcap. It might reflect the sandbox and not the malware itself
 alert tls any any -> any any (\
 	msg:"Enfal_lurid suricata rule";\
 	ja3.hash; content:"de350869b8c85de67a350c8d186f11e6";\
