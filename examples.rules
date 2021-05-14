@@ -221,3 +221,29 @@ alert http any any -> any any (\
 	rev:1;\
 )
 #Darkcomet end
+
+#TrojanCookies begin
+alert tcp any any -> any any (\
+	msg:"TrojanCookies simple rule";\
+	content:"GET /"; offset:0; depth:5;\
+	content:"Set-Cookie: "; distance:0;\
+	content:"Mozilla/4.0 (compatible|3b| MSIE 7.0|3b| Windows NT 5.1)"; distance:100;\
+	pcre:"/Set-Cookie: [a-zA-Z0-9+/]{100,}/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_TrojanCookies_840BD11343D140916F45223BA05ABACB_2012_01.pcap;\
+	sid:20;\
+	rev:1;\
+)
+
+alert http any any -> any any (\
+	msg:"TrojanCookies suricata rule";\
+	flow:established,to_server;\
+	http.header_names; content:"|0d 0a|Set-Cookie|0d 0a|";\
+	http.user_agent; content:"Mozilla/4.0 (compatible|3b| MSIE 7.0|3b| Windows NT 5.1)";\
+	http.header; pcre:"/Set-Cookie: [a-zA-Z0-9+/]{100,}/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_TrojanCookies_840BD11343D140916F45223BA05ABACB_2012_01.pcap;\
+	sid:21;\
+	rev:1;\
+)
+#TrojanCookies end
