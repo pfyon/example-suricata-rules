@@ -248,3 +248,48 @@ alert http any any -> any any (\
 	rev:1;\
 )
 #TrojanCookies end
+
+#Xinmic begin
+alert tcp any any -> any any (\
+	msg:"Xinmic simple rule - handshake";\
+	content:"|14 00 00 00 00 00 00 00 00 00 06 3e|"; offset:0; depth:12;\
+	dsize:12;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Xinmic_8761F29AF1AE2D6FACD0AE5F487484A5.pcap;\
+	sid:22;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"Xinmic simple rule - beacon";\
+	content:"|13 10 05 00 02 00 00 00|"; offset:0; depth:8;\
+	dsize:8;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Xinmic_8761F29AF1AE2D6FACD0AE5F487484A5.pcap;\
+	sid:23;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"Xinmic suricata rule - handshake";\
+	content:"|14 00 00 00 00 00 00 00 00 00 06 3e|"; offset:0; depth:12;\
+	dsize:12;\
+	flowbits:set,xinmic.handshake;\
+	flowbits:noalert;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Xinmic_8761F29AF1AE2D6FACD0AE5F487484A5.pcap;\
+	sid:24;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"Xinmic suricata rule - beacon";\
+	content:"|13 10 05 00 02 00 00 00|"; offset:0; depth:8;\
+	dsize:8;\
+	flowbits:isset,xinmic.handshake;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Xinmic_8761F29AF1AE2D6FACD0AE5F487484A5.pcap;\
+	sid:25;\
+	rev:1;\
+	)
+#Xinmic end
