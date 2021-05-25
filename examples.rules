@@ -293,3 +293,31 @@ alert tcp any any -> any any (\
 	rev:1;\
 	)
 #Xinmic end
+
+#NJRat begin
+alert tcp any any -> any any (\
+	msg:"NJRat simple rule - beacon";\
+	dsize:6;\
+	content:"|02 00 00 00 a2 00|"; offset:0; depth:6;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_NJRat-BackdoorLV_6fd868e68037040c94215566852230ab_CNtiananmensquare.pcap;\
+	sid:26;\
+	rev:1;\
+	)
+
+alert tcp-pkt any any -> any any (\
+	msg:"NJRat suricata rule - host info";\
+	content:"20"; offset:5; depth:2;\
+	byte_test:4, >=, 2010, 5, string, dec;\
+	byte_test:4, <=, 2030, 5, string, dec;\
+	byte_test:2, >=, 1, 9, string, dec;\
+	byte_test:2, <=, 12, 9, string, dec;\
+	byte_test:2, >=, 1, 11, string, dec;\
+	byte_test:2, <=, 31, 11, string, dec;\
+	pcre:"/^.{5}20[1-3][0-9][01][0-9][0-3][0-9]/";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_NJRat-BackdoorLV_6fd868e68037040c94215566852230ab_CNtiananmensquare.pcap;\
+	sid:27;\
+	rev:1;\
+	)
+#NJRat end
