@@ -321,3 +321,52 @@ alert tcp-pkt any any -> any any (\
 	rev:1;\
 	)
 #NJRat end
+
+#Taleret.E begin
+alert tcp any any -> any any (\
+	msg:"Taleret.E simple rule - random url";\
+	content:"GET /"; offset:0; depth:5;\
+	content:"Cookie: B="; distance:50;\
+	content:"&b="; distance:10; within:8;\
+	content:"&s="; distance:1; within:5;\
+	content:"|0d 0a 0d 0a|"; distance:0; within:7;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taleret.E_5328cfcb46ef18ecf7ba0d21a7adc02c.pcap;\ 
+	sid:28;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"Taleret.E suricata rule - random url";\
+	http.method; content:"GET";\
+	http.cookie; content:"B="; offset:0; depth:2; content:"&b="; distance:10; within:8; content:"&s="; distance:1; within:5;\
+	http.header_names; content:"|0d 0a|Cookie|0d 0a 0d 0a|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taleret.E_5328cfcb46ef18ecf7ba0d21a7adc02c.pcap;\ 
+	sid:29;\
+	rev:1;\
+	)
+
+alert tcp any any -> any 443 (\
+	msg:"Taleret.E simple rule - http to port 443";\
+	content:"GET / HTTP/1.1"; offset:0; depth:14;\
+	content:"Cookie: MCI="; distance:50;\
+	content:"|3b| MUID="; distance:26; within:7;\
+	content:"|0d 0a 0d 0a|"; distance:28; within:4;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taleret.E_5328cfcb46ef18ecf7ba0d21a7adc02c.pcap;\ 
+	sid:30;\
+	rev:1;\
+	)
+
+alert http any any -> any 443 (\
+	msg:"Taleret.E suricata rule - http to port 443";\
+	http.method; content:"GET";\
+	http.cookie; content:"MCI="; offset:0; depth:4; content:"|3b| MUID="; distance:26; within:7;\
+	http.header_names; content:"|0d 0a|Cookie|0d 0a 0d 0a|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Taleret.E_5328cfcb46ef18ecf7ba0d21a7adc02c.pcap;\ 
+	sid:31;\
+	rev:1;\
+	)
+#Taleret.E end
