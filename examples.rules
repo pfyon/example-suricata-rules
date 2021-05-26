@@ -401,3 +401,18 @@ alert tcp any any -> any any (\
 	rev:1;\
 	)
 #LURK end
+
+#DNSWatch begin
+alert tcp any any -> any any (\
+	msg:"DNSWatch simple rule";\
+	content:"POST http://"; offset:0; depth:12;\
+	content:"User-Agent: Mozilla/4.8.20 (compatible|3b| MSIE 5.0.2|3b| Win32)|0d 0a|"; distance:0;\
+	content:"----------2B9250BB47EE537B|0d 0a|"; distance:0;\
+	content:"new_host_"; distance:0;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_DNSWatch_protux_4F8A44EF66384CCFAB737C8D7ADB4BB8_2012-11.pcap;\ 
+	sid:35;\
+	rev:1;\
+	)
+#No suricata rule because the protocol is such garbage that it suricata doesn't recognize it as http at all
+#DNSWatch end
