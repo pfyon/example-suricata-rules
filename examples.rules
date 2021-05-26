@@ -370,3 +370,34 @@ alert http any any -> any 443 (\
 	rev:1;\
 	)
 #Taleret.E end
+
+#LURK begin
+alert tcp any any -> any any (\
+	msg:"LURK simple rule";\
+	content:"LURK"; offset:0; depth:4;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_LURK_AF4E8D4BE4481D0420CCF1C00792F484_20120-10.pcap;\ 
+	sid:32;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"LURK suricata rule - beacon";\
+	content:"LURK"; offset:0; depth:4;\
+	flow:established,to_server;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_LURK_AF4E8D4BE4481D0420CCF1C00792F484_20120-10.pcap;\ 
+	sid:33;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"LURK suricata rule - response";\
+	content:"LURK"; offset:0; depth:4;\
+	flow:established,to_client;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_LURK_AF4E8D4BE4481D0420CCF1C00792F484_20120-10.pcap;\ 
+	sid:34;\
+	rev:1;\
+	)
+#LURK end
