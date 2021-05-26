@@ -416,3 +416,32 @@ alert tcp any any -> any any (\
 	)
 #No suricata rule because the protocol is such garbage that it suricata doesn't recognize it as http at all
 #DNSWatch end
+
+#Lagulon begin
+alert tcp any any -> any any (\
+	msg:"Lagulon simple rule";\
+	content:"POST /"; offset:0; depth:6;\
+	content:"/server.php HTTP/1.1"; distance:1; within:30;\
+	content:"Content-Disposition: inline|3b| comp="; distance:0;\
+	content:"|3b| account="; distance:1;\
+	content:"|3b| product="; distance:1;\
+	content:"User-Agent: Mozilla/5.0|0d 0a|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Lagulon_e8b1f23616f9d8493e8a1bf0ca0f512a.pcap;\
+	sid:36;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"Lagulon suricata rule";\
+	flow:established,to_server;\
+	http.method; content:"POST";\
+	http.uri; content:"/server.php";\
+	http.header; content:"Content-Disposition: inline|3b| comp="; content:"|3b| account="; distance:1; content:"|3b| product="; distance:1;\
+	http.user_agent; content:"Mozilla/5.0";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Lagulon_e8b1f23616f9d8493e8a1bf0ca0f512a.pcap;\
+	sid:37;\
+	rev:1;\
+	)
+#Lagulon end
