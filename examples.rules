@@ -445,3 +445,23 @@ alert http any any -> any any (\
 	rev:1;\
 	)
 #Lagulon end
+
+#Likseput begin
+alert tcp any any -> any any (\
+	msg:"Likseput simple rule";\
+	content:"User-Agent: 5.1 ";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Likseput_E019E37F19040059AB5662563F06B609_2012-10.pcap;\
+	sid:38;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"Likseput suricata rule";\
+	http.user_agent; content:"5.1"; offset:0; depth:3;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Likseput_E019E37F19040059AB5662563F06B609_2012-10.pcap;\
+	sid:39;\
+	rev:1;\
+	)
+#Likseput end
