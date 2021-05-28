@@ -465,3 +465,38 @@ alert http any any -> any any (\
 	rev:1;\
 	)
 #Likseput end
+
+#Sanny-Daws begin
+alert tcp any any -> any 25 (\
+	msg:"Sanny-Daws simple rule - SMTP password";\
+	content:"MjIzODEy|0d 0a|"; offset:0; depth:10;\
+	dsize:10;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Sanny-Daws_338D0B855421867732E05399A2D56670_2012-10.pcap;\
+	sid:40;\
+	rev:1;\
+	)
+
+alert smtp any any -> any any (\
+	msg:"Sanny-Daws suricata rule - SMTP user";\
+	content:"bWFpbGJvb3Rl|0d 0a|"; offset:0; depth:14;\
+	dsize:14;\
+	flowbits:noalert;\
+	flowbits:set,sanny_daws.user;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Sanny-Daws_338D0B855421867732E05399A2D56670_2012-10.pcap;\
+	sid:41;\
+	rev:1;\
+	)
+
+alert smtp any any -> any any (\
+	msg:"Sanny-Daws suricata rule - SMTP password";\
+	content:"MjIzODEy|0d 0a|"; offset:0; depth:10;\
+	dsize:10;\
+	flowbits:isset,sanny_daws.user;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Sanny-Daws_338D0B855421867732E05399A2D56670_2012-10.pcap;\
+	sid:42;\
+	rev:1;\
+	)
+#Sanny-Daws end
