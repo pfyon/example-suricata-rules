@@ -500,3 +500,30 @@ alert smtp any any -> any any (\
 	rev:1;\
 	)
 #Sanny-Daws end
+
+#Mediana begin
+alert tcp any any -> any any (\
+	msg:"Mediana simple rule";\
+	content:"GET http://"; offset:0; depth:11;\
+	content:"index.htm?"; distance:0;\
+	content:"*"; distance:0;\
+	content:"|20|HTTP/1.0";\
+	content:"|0d 0a|X-HOST:|20|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Mediana_0AE47E3261EA0A2DBCE471B28DFFE007_2012-10.pcap;\
+	sid:43;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"Mediana suricata rule";\
+	http.method; content:"GET";\
+	http.protocol; content:"HTTP/1.0";\
+	http.header_names; content:"|0d 0a|X-HOST|0d 0a|"; fast_pattern;\
+	http.uri.raw; content:"http://"; offset:0; content:"index.htm?"; distance:0; content:"*"; distance:0;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_Mediana_0AE47E3261EA0A2DBCE471B28DFFE007_2012-10.pcap;\
+	sid:44;\
+	rev:1;\
+	)
+#Mediana end
