@@ -1,4 +1,10 @@
 #Pingbed begin
+#
+#GET /default.htm HTTP/1.1\r\n
+#User-Agent: Windows+NT+5.1\r\n
+#Host: www.trackdia.com\r\n
+#Cache-Control: no-cache\r\n
+#\r\n
 alert tcp any any -> any any (\
 	msg:"Pingbed simple rule";\
 	content:"GET /default.htm HTTP/1.1|0d 0a|"; offset:0; depth:27;\
@@ -21,6 +27,13 @@ alert http any any -> any any (\
 #Pingbend end
 
 #Taidoor begin
+#
+#GET /viswi.php?id=001090111D309GE67E HTTP/1.1\r\n
+#User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)\r\n
+#Host: 211.234.117.141:443\r\n
+#Connection: Keep-Alive\r\n
+#Cache-Control: no-cache\r\n
+#\r\n
 alert tcp any any -> any any (\
 	msg:"Taidoor simple rule";\
 	content:"111D309GE67E"; offset:24; depth:12;\
@@ -42,6 +55,14 @@ alert http any any -> any any (\
 #Taidoor end
 
 #Gh0st-gif begin
+#
+#GET /h.gif?pid =113&v=130586214568 HTTP/1.1\r\n
+#Accept: */*\r\n
+#Accept-Language: en-us\r\n
+#Pragma: no-cache\r\n
+#User-Agent: Mozilla/4.0(compatible; MSIE 6.0; Windows NT 5.1)\r\n
+#Connection: Keep-Alive\r\n
+#\r\n
 alert tcp any any -> any any (\
 	msg:"Gh0st-gif simple rule";\
 	content:"GET /h.gif?pid ="; offset:0; depth:16;\
@@ -64,7 +85,32 @@ alert http any any -> any any (\
 )
 #Gh0st-gif end
 
-#Hupigon begin #TODO: Finish hupigon after dealing with https://forum.suricata.io/t/different-behaviour-between-byte-test-and-content-when-using-flowbits/1361
+#Hupigon begin
+##TODO: Finish hupigon after dealing with https://forum.suricata.io/t/different-behaviour-between-byte-test-and-content-when-using-flowbits/1361
+#
+#Packet 1:
+#0000   00 00 00 00
+#
+#Packet 2:
+#0000   c1 d6 c1 d6 c9 cf cf df d6 f7 bb fa 00 00 00 00
+#0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0020   0c 00 00 00 3b 00 00 00 57 69 6e 64 6f 77 73 20
+#0030   58 50 20 35 2e 31 20 28 32 36 30 30 2e 53 65 72
+#0040   76 69 63 65 20 50 61 63 6b 20 33 29 00 00 00 00
+#0050   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0060   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0080   00 00 00 00 00 00 00 00 00 00 00 00 24 00 00 00
+#0090   44 45 4c 4c 58 54 00 00 00 00 00 00 00 00 00 00
+#00a0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#00b0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#00c0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#00d0   06 00 00 00 c1 d6 c1 d6 c9 cf cf df d6 f7 bb fa
+#00e0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#00f0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0100   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#0110   0c 00 00 00 34 73 2e 6c 6f 76 65 00 00 00 00 00
+#0120   00 00 48 41 43 4b 00 00
 alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - connection setup byte_test (works)";\
 	dsize:4;\
@@ -89,7 +135,7 @@ alert tcp any any -> any any (\
 
 #Note that byte_extract can only handle 8 bytes in non string mode. There are actually 12 static bytes here
 alert tcp any any -> any any (\
-	msg:"Hupigon suricata rule - beacon byte_test offset 4 (works)";\
+	msg:"Hupigon suricata rule - beacon byte_test offset 4 (should not work but does)";\
 	byte_test:8,=,0xc1d6c1d6c9cfcfdf,4;\
 	flowbits:isset,hupigon.start;\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
@@ -142,6 +188,34 @@ alert tls any any -> any any (\
 #Enfal_lurid end
 
 #Tapaoux begin
+#
+#GET /ol/yahoo/banner3.php?jpg=../(L2xq1Q3)/(eGAz1DMtdmlydGVhbDBx/(MSAfMSUcWzIyWzHc HTTP/1.1\r\n
+#User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1;)\r\n
+#Host: re.policy-forums.org\r\n
+#\r\n
+#
+#POST /ol/yahoo/banner1.php HTTP/1.1\r\n
+#Accept: */*\r\n
+#Content-Type: multipart/form-data; boundary=7d13a23b368\r\n
+#User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1;)\r\n
+#Host: re.policy-forums.org\r\n
+#Content-Length: 361\r\n
+#Connection: Keep-Alive\r\n
+#Cache-Control: no-cache\r\n
+#\r\n\r\n
+#--7d13a23b368
+#Content-Disposition: form-data; name="dirname"
+#
+#../(L2xq1Q3)/(eGAz1DMtdmlydGVhbDBx/(MSAfMSUcWzIyWzHc
+#--7d13a23b368
+#Content-Disposition: form-data; name="userfile"; filename="C:\WINDOWS\system32\ffffz201108231053ca.tmp"
+#Content-Type: application/octet-stream
+#
+#-%&%fx#<'! 49ed.<; .ngceen.0'#<60u.46>uf}f{e|nde
+#d``
+#gg
+#l`o
+#--7d13a23b368--
 alert tcp any any -> any any (\
 	msg:"Tapaoux simple rule GET";\
 	content:"GET /ol/yahoo/banner"; offset:0; depth:20;\
@@ -186,6 +260,13 @@ alert http any any -> any any (\
 #Tapaoux end
 
 #IXESHE begin
+#
+#GET /AWS96.jsp?baQMyZrdI5Rojs9Khs9fhnjwj/8mIOm9jOKyjnxKjQJA HTTP/1.1\r\n
+#x_bigfix_client_string: baQMyZrdqDAA\r\n
+#User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)\r\n
+#Host: freedream.strangled.net:443\r\n
+#Connection: Keep-Alive\r\n
+#\r\n
 alert tcp any any -> any any (\
 	msg:"IXESHE simple rule";\
 	content:"GET /AWS96.jsp"; offset:0; depth:14;\
@@ -211,9 +292,14 @@ alert http any any -> any any (\
 #The id= parameter seems to be a base64 encoded email address. Assuming the absolute smallest email address looks like a@b.c results in a minimum base64 length of 8 chars
 #base64_decode is given a large number of bytes, since decoding will end at the end of the buffer anyway
 #I tried combing pcrexform with base64_decode, but base64_decode doesn't seem to want to use the output buffer from pcrexform
+#
+#GET /a.php?id=c2ViYWxpQGxpYmVyby5pdA== HTTP/1.1\r\n
+#Host: 64.235.43.131\r\n
+#\r\n
 alert http any any -> any any (\
 	msg:"Darkcomet suricata rule";\
 	http.method; content:"GET";\
+	urilen:>16;\
 	http.uri; content:"id="; base64_decode: bytes 500, offset 0, relative;\
 	base64_data; content:"@";\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
@@ -224,6 +310,17 @@ alert http any any -> any any (\
 #Darkcomet end
 
 #TrojanCookies begin
+#
+#GET / HTTP/1.1 \r\n
+#Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*\r\n
+#Set-Cookie: AS8/TFljcH2HlJ6ruMLP3OagBt1Zmjp4X55af58gJxG+vcRg/1bdnmNT96EErJD7bfWH735hK5UgHki5DpK2KXz4QRzThUeOQYLtgDqH0hf0azTU65DDa/LfP44aaH7DMaUIFepiefAmDIWW+B4YgGoksrzb4NX6sW4jvO+XMDJ3YrmnqR/feSIYv/tPcmFOaQAA\r\n
+#Accept-Language: en-us\r\n
+#Accept-Encoding: gzip, deflate\r\n
+#User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)\r\n
+#Host: 184.22.41.10\r\n
+#Connection: Keep-Alive\r\n
+#Cache-Control: no-cache\r\n
+#\r\n
 alert tcp any any -> any any (\
 	msg:"TrojanCookies simple rule";\
 	content:"GET /"; offset:0; depth:5;\
