@@ -347,6 +347,13 @@ alert http any any -> any any (\
 #TrojanCookies end
 
 #Xinmic begin
+#
+#Handshake
+# 0000   14 00 00 00 00 00 00 00 00 00 06 3e
+#
+#Beacon
+# 0000   13 10 05 00 02 00 00 00
+
 alert tcp any any -> any any (\
 	msg:"Xinmic simple rule - handshake";\
 	content:"|14 00 00 00 00 00 00 00 00 00 06 3e|"; offset:0; depth:12;\
@@ -392,6 +399,22 @@ alert tcp any any -> any any (\
 #Xinmic end
 
 #NJRat begin
+#
+#Example 1
+# 0000   02 00 00 00 a2 00
+#
+#Example 2
+# 0000   fc 0f 00 00 a0 32 30 31 33 30 38 31 39 b2 d8 b6   .....20130819...
+# 0010   c0 7c 28 31 37 32 2e 31 36 2e 32 35 33 2e 31 33   .|(172.16.253.13
+# 0020   32 29 7c 31 30 34 36 7c 57 69 6e 58 50 7c 44 7c   2)|1046|WinXP|D|
+# 0030   4c 7c 4e 6f 7c 30 cc ec 30 d0 a1 ca b1 30 b7 d6   L|No|0..0....0..
+# 0040   30 c3 eb 7c 4e 6f 7c 56 32 30 31 30 2d 76 32 34   0..|No|V2010-v24
+# 0050   7c 36 36 38 7c 30 7c 35 61 66 32 39 38 65 66 7c   |668|0|5af298ef|
+# 0060   30 7c 30 7c 00 00 00 00 00 00 00 00 00 00 00 00   0|0|............
+# ... (all nulls)
+# 05a0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+# 05b0   00 00 00 00                                       ....
+
 alert tcp any any -> any any (\
 	msg:"NJRat simple rule - beacon";\
 	dsize:6;\
@@ -420,6 +443,22 @@ alert tcp-pkt any any -> any any (\
 #NJRat end
 
 #Taleret.E begin
+#    GET /jw!Dyz0_2mTExQ0xbBnlp.RZcXoHmU- HTTP/1.1\r\n
+#    User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Win32)\r\n
+#    Host: tw.myblog.yahoo.com\r\n
+#    Connection: Keep-Alive\r\n
+#    Cache-Control: no-cache\r\n
+#    Cookie: B=8sah02d6on6k9&b=3&s=as\r\n
+#    \r\n
+#
+#    GET / HTTP/1.1\r\n
+#    User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)\r\n
+#    Host: mac.gov.skies.tw\r\n
+#    Connection: Keep-Alive\r\n
+#    Cache-Control: no-cache\r\n
+#    Cookie: MCI=HHMHMBLHEHNLIOJRINRIJPRJIJ; MUID=ba2c08421000e9621000355b0000\r\n
+#    \r\n
+
 alert tcp any any -> any any (\
 	msg:"Taleret.E simple rule - random url";\
 	content:"GET /"; offset:0; depth:5;\
