@@ -740,3 +740,94 @@ alert http any any -> any any (\
 	rev:1;\
 	)
 #Mediana end
+
+#Mswab_Yayih begin
+#
+# POST /bbs/info.asp HTTP/1.1\r\n
+# Host: 199.192.156.134:443\r\n
+# Content-Length: 100\r\n
+# Connection: Keep-Alive\r\n
+# Cache-Control: no-cache\r\n
+# \r\n
+# <payload>
+#
+# 0000   50 4f 53 54 20 2f 62 62 73 2f 69 6e 66 6f 2e 61   POST /bbs/info.a
+# 0010   73 70 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73   sp HTTP/1.1..Hos
+# 0020   74 3a 20 31 39 39 2e 31 39 32 2e 31 35 36 2e 31   t: 199.192.156.1
+# 0030   33 34 3a 34 34 33 0d 0a 43 6f 6e 74 65 6e 74 2d   34:443..Content-
+# 0040   4c 65 6e 67 74 68 3a 20 31 30 30 0d 0a 43 6f 6e   Length: 100..Con
+# 0050   6e 65 63 74 69 6f 6e 3a 20 4b 65 65 70 2d 41 6c   nection: Keep-Al
+# 0060   69 76 65 0d 0a 43 61 63 68 65 2d 43 6f 6e 74 72   ive..Cache-Contr
+# 0070   6f 6c 3a 20 6e 6f 2d 63 61 63 68 65 0d 0a 0d 0a   ol: no-cache....
+# 0080   33 44 33 33 33 35 33 31 35 30 31 41 37 37 37 30   3D333531501A7770
+# 0090   61 00 0c 00 48 00 00 00 48 00 00 00 58 50 53 50   a...H...H...XPSP
+# 00a0   33 2d 4f 46 43 32 30 30 37 2d 52 7c 75 73 30 33   3-OFC2007-R|us03
+# 00b0   30 32 7c 31 30 2e 30 2e 32 2e 31 35 7c 57 69 6e   02|10.0.2.15|Win
+# 00c0   4e 54 20 76 35 2e 31 20 62 75 69 6c 64 20 32 36   NT v5.1 build 26
+# 00d0   30 30 20 2d 20 53 65 72 76 69 63 65 20 50 61 63   00 - Service Pac
+# 00e0   6b 20 33 7c                                       k 3|
+
+alert tcp any any -> any 443 (\
+	msg:"Mswab_Yayih simple rule";\
+	content:"POST /bbs/info.asp HTTP/1.1"; offset:0; depth:27;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Mswab_Yayih_FD1BE09E499E8E380424B3835FC973A8_2012-03.pcap;\
+	sid:45;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"Mswab_Yayih suricata rule";\
+	http.method; content:"POST";\
+	http.uri; content:"/bbs/info.asp";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file Mswab_Yayih_FD1BE09E499E8E380424B3835FC973A8_2012-03.pcap;\
+	sid:46;\
+	rev:1;\
+	)
+#Mswab_Yayih end
+
+#8202_tbd begin
+#
+#The second byte seems to be the length of the payload
+#
+#Example 1
+# 0000   00 0d 00 00 00 00 00 00 00 00 52 00 75            ..........R.u
+#
+#Example 2
+# 0000   07 5a 00 00 00 08 01 01 00 00 00 00 00 05 00 00   .Z..............
+# 0010   00 01 00 00 00 01 ac 10 fd 82 18 38 cf 2f 24 e6   ...........8./$.
+# 0020   16 43 b5 90 14 17 c1 2e c3 bd 00 06 00 06 00 06   .C..............
+# 0030   00 01 00 00 44 00 65 00 6c 00 6c 00 58 00 54 00   ....D.e.l.l.X.T.
+# 0040   4c 00 61 00 75 00 72 00 61 00 00 00 38 00 32 00   L.a.u.r.a...8.2.
+# 0050   34 00 5f 00 43 00 4c 00 53 00                     4._.C.L.S.
+#
+#Example 3
+# 0000   07 1f 00 00 00 00 00 00 00 00 52 00 75 cd ab 00   ..........R.u...
+# 0010   00 01 00 50 00 00 00 00 00 00 00 00 00 04 44      ...P..........D
+#
+#I have two different rules here as the byte_extract features don't seem to work well when content is used at the same time
+
+alert tcp-pkt any any -> any any (\
+	msg:"8202_tbd suricata rule initial beacon content";\
+	app-layer-protocol:!http;\
+	content:"|00 00 00 00 00 00 00 00 52 00 75|"; offset:2; depth:11;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file 8202_tbd_ 6D2C12085F0018DAEB9C1A53E53FD4D1.pcap;\
+	sid:47;\
+	rev:1;\
+	)
+
+alert tcp-pkt any any -> any any (\
+	msg:"8202_tbd suricata rule initial beacon byte_test";\
+	app-layer-protocol:!http;\
+	byte_test: 8, =, 0x0000000000520075, 5;
+	byte_extract: 1, 1, length;\
+	isdataat:length;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file 8202_tbd_ 6D2C12085F0018DAEB9C1A53E53FD4D1.pcap;\
+	sid:48;\
+	rev:1;\
+	)
+
+#8202_tbd end
