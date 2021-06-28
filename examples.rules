@@ -878,3 +878,70 @@ alert http any any -> any any (\
 	rev:1;\
 	)
 #LetsGo_yahoosb end
+
+#RssFeeder begin
+#
+# GET /data/rss HTTP/1.1\r\n
+# Accept: */*\r\n
+# User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.9.1) Gecko/20090624 Firefox/3.5\r\n
+# Accept-Encoding: gzip, deflate\r\n
+# If-Modified-Since: Thu, 20 Dec 2012 03:31:19 GMT\r\n
+# If-None-Match: GgZzyuh3LXs6KS2H9PjPSW1ZUQ\r\n
+# Host: huming386.livejournal.com\r\n
+# Connection: Keep-Alive\r\n
+# \r\n
+#
+# POST /orange/news.php HTTP/1.1\r\n
+# Accept: */*\r\n
+# Content-Type: application/x-www-form-urlencoded\r\n
+# Accept-Encoding: gzip, deflate\r\n
+# User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR 3.5.21022)\r\n
+# Host: killme.98.shoptupian.com\r\n
+# Content-Length: 170\r\n
+# Connection: Keep-Alive\r\n
+# Cache-Control: no-cache\r\n
+# \r\n
+# cstype=server&authname=servername&authpass=serverpass&hostname=DELLXT&ostype=Microsoft Windows XP Professional3&macaddr=00:0C:29:71:24:89&owner=two13&version=1.2.0&t=4941
+
+alert tcp any any -> any any (\
+	msg:"RssFeeder simple rule GET";\
+	content:"GET /data/rss HTTP/1.1"; offset:0; depth:22;\
+	content:"User-Agent: Mozilla/5.0 (Windows|3b| U|3b| Windows NT 5.1|3b| rv:1.9.1) Gecko/20090624 Firefox/3.5";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_RssFeeder_68EE5FDA371E4AC48DAD7FCB2C94BAC7-2012-06.pcap;\
+	sid:52;\
+	rev:1;\
+	)
+
+alert tcp any any -> any any (\
+	msg:"RssFeeder simple rule POST";\
+	content:"POST /orange/news.php HTTP/1.1"; offset:0; depth:30;\
+	content:"User-Agent: Mozilla/4.0 (compatible|3b| MSIE 7.0|3b| Windows NT 5.1|3b| Trident/4.0|3b| .NET4.0C|3b| .NET4.0E|3b| .NET CLR 2.0.50727|3b| .NET CLR 3.0.04506.648|3b| .NET CLR 3.5.21022)";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_RssFeeder_68EE5FDA371E4AC48DAD7FCB2C94BAC7-2012-06.pcap;\
+	sid:53;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"RssFeeder suricata rule GET";\
+	http.method; content:"GET";\
+	http.uri; content:"/data/rss";\
+	http.user_agent; content:"Mozilla/5.0 (Windows|3b| U|3b| Windows NT 5.1|3b| rv:1.9.1) Gecko/20090624 Firefox/3.5";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_RssFeeder_68EE5FDA371E4AC48DAD7FCB2C94BAC7-2012-06.pcap;\
+	sid:54;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"RssFeeder suricata rule POST";\
+	http.method; content:"POST";\
+	http.uri; content:"/orange/news.php";\
+	http.user_agent; content:"Mozilla/4.0 (compatible|3b| MSIE 7.0|3b| Windows NT 5.1|3b| Trident/4.0|3b| .NET4.0C|3b| .NET4.0E|3b| .NET CLR 2.0.50727|3b| .NET CLR 3.0.04506.648|3b| .NET CLR 3.5.21022)";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_RssFeeder_68EE5FDA371E4AC48DAD7FCB2C94BAC7-2012-06.pcap;\
+	sid:55;\
+	rev:1;\
+	)
+#RssFeeder end
