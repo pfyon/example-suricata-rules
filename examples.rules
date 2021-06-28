@@ -831,3 +831,50 @@ alert tcp-pkt any any -> any any (\
 	)
 
 #8202_tbd end
+
+#9002 begin
+#
+#Example
+# 0000   39 30 30 32 10 00 00 00 0c 00 00 00 1d 8c ff b2   9002............
+# 0010   01 ff ff ff ff 03 77 78 14 11 00 00               ......wx....
+
+alert tcp any any -> any any (\
+	msg:"9002 simple rule";\
+	content:"9002"; offset:0; depth:4;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_9002_D4ED654BCDA42576FDDFE03361608CAA_2013-01-30.pcap;\
+	sid:49;\
+	rev:1;\
+	)
+
+#9002 end
+
+#LetsGo_yahoosb begin
+#
+# GET /index.htm HTTP/1.1\r\n
+# User-Agent: IPHONE8.5(host:XPSP3-R93-Ofc2003SP2,ip:172.29.0.116)\r\n
+# Accept: */*\r\n
+# Host: mickeypluto.info\r\n
+# Connection: Keep-Alive\r\n
+# \r\n
+
+alert tcp any any -> any any (\
+	msg:"LetsGo_yahoosb simple rule beacon";\
+	content:"User-Agent: ";\
+	content:"(host:"; distance:5;\
+	content:",ip:"; distance:5;\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_LetsGo_yahoosb_b21ba443726385c11802a8ad731771c0_2011-07-19.pcap;\
+	sid:50;\
+	rev:1;\
+	)
+
+alert http any any -> any any (\
+	msg:"LetsGo_yahoosb suricata rule beacon";\
+	http.user_agent; content:"(host:"; content:",ip:";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file BIN_LetsGo_yahoosb_b21ba443726385c11802a8ad731771c0_2011-07-19.pcap;\
+	sid:51;\
+	rev:1;\
+	)
+#LetsGo_yahoosb end
