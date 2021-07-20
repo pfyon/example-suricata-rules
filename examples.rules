@@ -858,10 +858,11 @@ alert tcp any any -> any any (\
 # Connection: Keep-Alive\r\n
 # \r\n
 
+#fast_pattern is important here as it seems suricata is using "User-Agent: " to prefilter otherwise, resulting in a slower rule
 alert tcp any any -> any any (\
 	msg:"LetsGo_yahoosb simple rule beacon";\
 	content:"User-Agent: ";\
-	content:"(host:"; distance:5;\
+	content:"(host:"; distance:5; fast_pattern;\
 	content:",ip:"; distance:5;\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
 	metadata:file BIN_LetsGo_yahoosb_b21ba443726385c11802a8ad731771c0_2011-07-19.pcap;\
@@ -945,3 +946,30 @@ alert http any any -> any any (\
 	rev:1;\
 	)
 #RssFeeder end
+
+#metasploit_aurora begin
+#
+#    GET /infowTVeeGDYJWNfsrdrvXiYApnuPoCMjRrSZuKtbVgwuZCXwxKjtEclbPuJPPctcflhsttMRrSyxl.gif HTTP/1.1\r\n
+#    Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, */*\r\n
+#    Referer: http://192.168.100.202/info?rFfWELUjLJHpP\r\n
+#    Accept-Language: en-us\r\n
+#    Accept-Encoding: gzip, deflate\r\n
+#    User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)\r\n
+#    Host: 192.168.100.202\r\n
+#    Connection: Keep-Alive\r\n
+#    \r\n
+
+#I profiled 3 variations of the pcre and found that using the R (relative) flag and anchoring it at the start performed better on average than the others:
+#pcre:"/^GET \/info[a-zA-Z]{50,100}\.gif HTTP\/1\.1/";
+#pcre:"/^GET \/info[a-zA-Z]{50,100}\.gif/";
+alert tcp any any -> any any (\
+	msg:"metasploit_aurora simple rule GET 3";\
+	content:"GET /info"; offset:0;\
+	pcre:"/^[a-zA-Z]{50,100}\.gif HTTP\/1\.1/R";\
+	content:"Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, */*|0d 0a|";\
+	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
+	metadata:file GENERAL_metasploit_aurora_chrissanders.org.pcap;\
+	sid:58;\
+	rev:1;\
+	)
+#metasploit_aurora end
