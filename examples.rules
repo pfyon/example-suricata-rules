@@ -111,6 +111,8 @@ alert http any any -> any any (\
 #0100   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 #0110   0c 00 00 00 34 73 2e 6c 6f 76 65 00 00 00 00 00
 #0120   00 00 48 41 43 4b 00 00
+#
+#Profiling: Naturally sid 7 and 9 perform poorly in ticks_total because of the byte_test. Without a content match, this rule has to be evaluated on every packet matching the criteria.
 alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - connection setup byte_test (works)";\
 	dsize:4;\
@@ -296,6 +298,8 @@ alert http any any -> any any (\
 #GET /a.php?id=c2ViYWxpQGxpYmVyby5pdA== HTTP/1.1\r\n
 #Host: 64.235.43.131\r\n
 #\r\n
+#
+#Profiling: This rule performs poorly, both in ticks_total and in ticks_avg. This is due to the limited filtering and expensive (base64_data) check. In testing, changing the number of bytes that base64_decode uses does not significantly affect performance.
 alert http any any -> any any (\
 	msg:"Darkcomet suricata rule";\
 	http.method; content:"GET";\
@@ -472,11 +476,13 @@ alert tcp any any -> any any (\
 	rev:1;\
 	)
 
+#Profiling - Adding the user_agent here really improved performance due to how uncommon this user agent is in my pcap samples.
 alert http any any -> any any (\
 	msg:"Taleret.E suricata rule - random url";\
 	http.method; content:"GET";\
 	http.cookie; content:"B="; offset:0; depth:2; content:"&b="; distance:10; within:8; content:"&s="; distance:1; within:5;\
 	http.header_names; content:"|0d 0a|Cookie|0d 0a 0d 0a|";\
+	http.user_agent; content:"Mozilla/4.0 (compatible|3b| MSIE 6.0|3b| Win32)"; isdataat:!1, relative;\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
 	metadata:file BIN_Taleret.E_5328cfcb46ef18ecf7ba0d21a7adc02c.pcap;\ 
 	sid:29;\
@@ -625,7 +631,7 @@ alert http any any -> any any (\
 	http.method; content:"POST";\
 	http.uri; content:"/server.php";\
 	http.header; content:"Content-Disposition: inline|3b| comp="; content:"|3b| account="; distance:1; content:"|3b| product="; distance:1;\
-	http.user_agent; content:"Mozilla/5.0";\
+	http.user_agent; content:"Mozilla/5.0"; isdataat:!1, relative;\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
 	metadata:file BIN_Lagulon_e8b1f23616f9d8493e8a1bf0ca0f512a.pcap;\
 	sid:37;\
