@@ -1,9 +1,9 @@
-# Writing Good Signatures
+# Writing Performant Signatures
 
 ## Content Terms
 Whenever possible, make sure your rule has a `content` term. Suricata uses `content` terms to prefilter arriving packets, reducing the number of signatures that need further evaluation a given packet. If a signature has a `content` term and that term isn't found anywhere in a packet, it doesn't matter how expensive the rest of the signature is since it won't be checked.
 
-When profiling your signatures, pay attention to the "checks" and "matches" values. These will tell you what proportion of packets passed the initial prefiltering and needed further evaluation.
+When profiling your signatures, pay attention to the "checks" and "matches" values. These will tell you what proportion of packets passed the initial prefiltering and needed further evaluation. A high "checks" value could indicate a need to prefilter using `fast_pattern` or `prefilter`.
 
 ### fast_pattern
 
@@ -49,6 +49,8 @@ tcp.mss
 prefilter
 ```
 
+If all else fails, you may consider prefiltering using dsize and an appropriate maximum or minimum packet size.
+
 ## Application Parsers
 Consider the following two signatures:
 
@@ -76,7 +78,7 @@ alert http any any -> any any (\
 )
 ```
 
-While the signatures differ in their implementation, they are both alerting on the same malicious traffic. The signatures themselves take approximately the same number of ticks to evaluate, but the signature using the HTTP application parser takes fewer ticks overall because it only has to check against HTTP traffic. See below for some profiling I did on the two signatures.
+While the signatures differ slightly in their implementation, they are both alerting on the same malicious traffic. The signatures themselves take approximately the same number of ticks to evaluate, but the signature using the HTTP application parser takes approximately 50% of the simple rule's `ticks_total` because it only has to check against HTTP traffic. See below for some profiling I did on the two signatures.
 
 ```
 ...
