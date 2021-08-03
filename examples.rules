@@ -112,10 +112,10 @@ alert http any any -> any any (\
 #0110   0c 00 00 00 34 73 2e 6c 6f 76 65 00 00 00 00 00
 #0120   00 00 48 41 43 4b 00 00
 #
-#Profiling: Naturally sid 7 and 9 perform poorly in ticks_total because of the byte_test. Without a content match, this rule has to be evaluated on every packet matching the criteria.
+#Profiling: sid 7 performed quite poorly before adding prefilter. I guess suricata 6.x doesn't automatically pick a prefiltering criteria unless there is a content term, resulting in this rule having to be evaluated against every packet. 
 alert tcp any any -> any any (\
 	msg:"Hupigon suricata rule - connection setup byte_test (works)";\
-	dsize:4;\
+	dsize:4; prefilter;\
 	byte_test:4,=,0,0;\
 	flowbits:set,hupigon.start;\
 	reference:url,https://contagiodump.blogspot.com/2013/04/collection-of-pcap-files-from-malware.html;\
