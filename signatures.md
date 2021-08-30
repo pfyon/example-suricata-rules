@@ -1,9 +1,18 @@
 # Writing Performant Signatures
 
-## Content Terms
-Whenever possible, make sure your rule has a `content` term. Suricata uses `content` terms to prefilter arriving packets, reducing the number of signatures that need further evaluation a given packet. If a signature has a `content` term and that term isn't found anywhere in a packet, it doesn't matter how expensive the rest of the signature is since it won't be checked.
+## Profiling
+In order to identify whether a signature is performant or not, you'll need to profile it. To do this, you need to build suricata with profiling enabled. The default profiling log filename is `rule_perf.log`. When testing performance, it is important to test your signatures against a pcap that is representative of the traffic in your network.
 
-When profiling your signatures, pay attention to the "checks" and "matches" values. These will tell you what proportion of packets passed the initial prefiltering and needed further evaluation. A high "checks" value could indicate a need to prefilter using `fast_pattern` or `prefilter`.
+The signatures in `rule_perf.log` will be sorted by "ticks", "average ticks", "average ticks (match)", "average ticks (no match)", "number of checks", "number of matches", or "max ticks", or all of the above depending on your `suricata.yaml` config. A good place to start is looking at signatures sorted by ticks since this will show the overall worst performing signatures. You can use command line tools to make this information more easily readable:
+
+```
+user@laptop:~$ cat rule_perf.log |jq -c 'select(.sort=="ticks")' |jq .
+```
+
+When profiling your signatures, pay attention to the "checks" and "matches" values. These values can be used to tell what proportion of packets passed the initial prefiltering and needed further evaluation. A high "checks" value could indicate a need to better prefilter using `content` (if no content term exists already), `fast_pattern` or `prefilter`.
+
+## Content Terms
+Whenever possible, make sure your rule has a `content` term. Suricata uses `content` terms to prefilter arriving packets, reducing the number of signatures that need further evaluation for a given packet. If a signature has a `content` term and that term isn't found anywhere in a packet, it doesn't matter how expensive the rest of the signature is since it won't be checked.
 
 ### fast_pattern
 
@@ -22,13 +31,13 @@ alert tcp any any -> any any (\
         )
 ```
 
-Without `fast_pattern`, this signature peformed poorly. Likely, the rules engine decided that "User-Agent: " was the best pattern to use, which resulted in very poor performance in an environment with any substantial amount of HTTP traffic. `fast_pattern` significantly reduced the number of packets that this rule had to be evaluated against.
+Without `fast_pattern`, this signature peformed poorly. Likely, the rules engine decided that "User-Agent: " was the best pattern to use, which resulted in very poor performance in an environment with any reasonable amount of HTTP traffic. `fast_pattern` significantly reduced the number of packets that this rule had to be evaluated against.
 
 ### prefilter
 If you don't have a content term in your signature, you can specify another field to prefilter on. You can check what keywords allow the use of the `prefilter` on your installation by running `suricata --list-keywords=all`. On my installation, the below keywords are supported:
 
 ```bash
-$ suricata --list-keywords=all |grep -B2 prefilter |grep "^[a-zA-Z]" |tr ":" " "
+user@laptop:~$ suricata --list-keywords=all |grep -B2 prefilter |grep "^[a-zA-Z]" |tr ":" " "
 app-layer-protocol 
 tcp.ack 
 tcp.seq 
@@ -46,10 +55,9 @@ id
 template2 
 icmpv6.mtu 
 tcp.mss 
-prefilter
 ```
 
-If all else fails, you may consider prefiltering using dsize and an appropriate maximum or minimum packet size.
+If all else fails, you may consider prefiltering using dsize and an appropriate maximum or minimum packet size. Even when the packet size may not be known precisely, a reasonable dsize can exclude sessions consisting of very small or very large packets.
 
 ## Application Parsers
 Consider the following two signatures:
