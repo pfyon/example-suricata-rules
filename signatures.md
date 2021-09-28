@@ -57,7 +57,10 @@ icmpv6.mtu
 tcp.mss 
 ```
 
+
 If all else fails, you may consider prefiltering using dsize and an appropriate maximum or minimum packet size. Even when the packet size may not be known precisely, a reasonable dsize can exclude sessions consisting of very small or very large packets.
+
+Note: In testing, I found that using `app-layer-protocol: http` with regular content matches would result in no alerts. Using `alert http ...` with a regular content match produced the expected output, and was comparable performance to using `http` and `http.uri`. When a protocol is supported in the [rule header](https://suricata.readthedocs.io/en/latest/rules/intro.html#protocol), you should use this instead of `app-layer-protocol`.
 
 ## Application Parsers
 Consider the following two signatures:
@@ -118,3 +121,5 @@ While the signatures differ slightly in their implementation, they are both aler
     }
 ...
 ```
+
+If you try to combine two application layer protocol keywords, suricata will log an error for the signature. This happens even if the keywords refer to the same protocol. An example is a `alert http ...` rule with `app-layer-protocol: http`.
