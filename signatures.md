@@ -123,3 +123,125 @@ While the signatures differ slightly in their implementation, they are both aler
 ```
 
 If you try to combine two application layer protocol keywords, suricata will log an error for the signature. This happens even if the keywords refer to the same protocol. An example is a `alert http ...` rule with `app-layer-protocol: http`.
+
+## Lua
+
+Running any extra code on your packets will have a negative performance impact, but sometimes you need more functionality than what is supported by suricata keywords. Lua allows a signature writer to run arbitrary lua code against different buffers. See suricata's [Lua Scripting](https://suricata.readthedocs.io/en/latest/rules/rule-lua-scripting.html) section for more details. Suricata supports passing through the following buffers to a lua script:
+```
+    packet – entire packet, including headers
+    payload – packet payload (not stream)
+    buffer – the current sticky buffer
+    http.uri
+    http.uri.raw
+    http.request_line
+    http.request_headers
+    http.request_headers.raw
+    http.request_cookie
+    http.request_user_agent
+    http.request_body
+    http.response_headers
+    http.response_headers.raw
+    http.response_body
+    http.response_cookie
+```
+
+Any time your signature touches lua, there will be a non-zero cost regardless of how complex the lua script is. Consider the following rule and corresponding lua:
+
+```
+alert ip any any -> any any (msg:"All payloads lua"; lua:lua-test-all.lua; sid:1; rev:1;)
+
+-------
+function init(args)
+        local needs = {}
+        needs["payload"] = tostring(true)
+        return needs
+end
+
+function match(args)
+        return 1
+end 
+```
+
+On my test infrastructure, this rule cost an average of approximately 20500 ticks to run:
+
+```
+...
+  "rules": [
+    {
+      "signature_id": 1,
+      "gid": 1,
+      "rev": 1,
+      "checks": 590439,
+      "matches": 335564,
+      "ticks_total": 12092973156,
+      "ticks_max": 10575540,
+      "ticks_avg": 20481,
+      "ticks_avg_match": 21892,
+      "ticks_avg_nomatch": 18623,
+      "percent": 42
+    },
+...
+```
+
+### Lua Best Practices
+- Don't use lua unless it is absolutely necessary
+- Avoid loops whenever possible
+- Fail fast: quick checks early on to bail out of processing
+- Include a default `return 0` to handle edge cases that fall through
+- Include unit tests to validate the match() function. This will make your code more maintainable.
+
+## Decode Events
+
+Sometimes you want to write a rule that only matches on some sort of mangled packets. For example, a packet that has a bad checksum. These keywords aren't very well documented, but you can find examples in the [decoder-events.rules](https://github.com/OISF/suricata/blob/master/rules/decoder-events.rules) file that is shipped with the suricata source, as well as the source code in [decode-events.c](https://github.com/OISF/suricata/blob/master/src/decode-events.c) and [detect-csum.c](https://github.com/OISF/suricata/blob/master/src/detect-csum.c). These keywords are all in the format of `decode-event: ...;` or `<protocol>-csum:invalid;`. See below examples from [decoder-events.rules](https://github.com/OISF/suricata/blob/master/rules/decoder-events.rules):
+
+```
+alert icmp any any -> any any (msg:"SURICATA ICMPv4 invalid checksum"; icmpv4-csum:invalid; classtype:protocol-command-decode; sid:2200076; rev:2;)
+alert pkthdr any any -> any any (msg:"SURICATA TCP packet too small"; decode-event:tcp.pkt_too_small; classtype:protocol-command-decode; sid:2200033; rev:2;)
+```
+
+## Appendix A: Weird Behaviour
+
+While writing this guide, I've come across some strange suricata behaviour that I can't explain. For example, the two rules below should be equivalent:
+
+```
+alert ip any any -> any any (msg:"dsize > 0"; dsize:>0; sid:1; rev:1;)
+alert ip any any -> any any (msg:"Lua payload size > 0"; lua:lua-test-payload-size.lua; sid:2; rev:1;)
+
+-- lua-test-payload-size.lua
+function init(args) 
+        local needs = {}
+        needs["payload"] = tostring(true)
+        return needs
+end
+
+function match(args)
+        a = tostring(args["payload"])
+        if #a > 0 then
+                return 1
+        end
+        return 0
+end
+
+```
+
+Yet, when I run these two rules across a sample pcap file, I get the following:
+```
+"rules": [
+    {
+      "signature_id": 2,
+      "gid": 1,
+      "rev": 1,
+      "checks": 590457,
+      "matches": 335564,
+      ...
+    },
+    {
+      "signature_id": 1,
+      "gid": 1,
+      "rev": 1,
+      "checks": 335564,
+      "matches": 334762,
+      ...
+    }
+
+```
