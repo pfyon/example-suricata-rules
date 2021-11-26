@@ -185,10 +185,82 @@ On my test infrastructure, this rule cost an average of approximately 20500 tick
 
 ### Lua Best Practices
 - Don't use lua unless it is absolutely necessary
+- Narrow down the signature as much as possible using suricata keywords
+- Validate your input before performing expensive operations on it
 - Avoid loops whenever possible
 - Fail fast: quick checks early on to bail out of processing
 - Include a default `return 0` to handle edge cases that fall through
 - Include unit tests to validate the match() function. This will make your code more maintainable.
+
+### Narrow Down Your Signature
+Consider the signature below:
+```
+alert tcp any any -> any any (msg:"Bad malware"; content:"|ab cd|"; offset:45; depth:2; lua:badmalware.lua; sid:1; rev:1;)
+```
+
+Even if the lua code is very precise, depending on the traffic that makes up your network it could be doing a lot of work on sessions that could be filtered out by suricata.
+
+You should consider narrowing down the traffic using dsize, app-layer-proto, stream_size, etc. in order to reduce the amount of times that the lua code will be executed.
+
+``
+app-layer-proto:failed;
+app-layer-proto:!tls;
+dsize:<80;
+dsize:>45;
+stream_size:client, <, 100;
+```
+
+### Validate Your Input
+If you expect a buffer to be a certain size, check that it is the expected size before you do something expensive using it. For example, if a buffer should contain a 16 byte encryption key, make sure that the buffer is 16 bytes before you try to decrypt with it.
+
+### Avoid Loops Whenever Possible
+Looping over a buffer of unknown size introduces unknown latencies. If using a loop, you need to be extra careful to ensure an infinite loop is impossible.
+
+### Fail Fast
+Using two identical rules, one that performs a busyloop in lua and one the other that returns 0 immediately, the busy loop takes approximately twice as many ticks than the quick return.
+```
+-- Busy loop
+function match(args)
+        local i = 10000
+
+        while i > 0 do
+                i = i - 1
+        end
+        return 0
+end
+
+-- Quick
+function match(args)
+        return 0
+end
+```
+
+```
+  "rules": [
+    {
+      "signature_id": 1,
+      "checks": 590439,
+      "matches": 0,
+      "ticks_total": 21203433288,
+      "ticks_max": 20055852,
+      "ticks_avg": 35911,
+      "ticks_avg_match": 0,
+      "ticks_avg_nomatch": 35911,
+      "percent": 65
+    },
+    {
+      "signature_id": 2,
+      "checks": 590439,
+      "matches": 0,
+      "ticks_total": 11015156808,
+      "ticks_max": 11417436,
+      "ticks_avg": 18655,
+      "ticks_avg_match": 0,
+      "ticks_avg_nomatch": 18655,
+      "percent": 34
+    }
+  ]
+```
 
 ## Decode Events
 
@@ -245,3 +317,4 @@ Yet, when I run these two rules across a sample pcap file, I get the following:
     }
 
 ```
+Adding a `ip_proto:!6` to exclude all TCP and there is no discrepancy, so there are some approximately 800 packets in my test pcap where the simple lua script calculates a length differently than dsize.
