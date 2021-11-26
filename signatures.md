@@ -202,7 +202,7 @@ Even if the lua code is very precise, depending on the traffic that makes up you
 
 You should consider narrowing down the traffic using dsize, app-layer-proto, stream_size, etc. in order to reduce the amount of times that the lua code will be executed.
 
-``
+```
 app-layer-proto:failed;
 app-layer-proto:!tls;
 dsize:<80;
