@@ -318,3 +318,8 @@ Yet, when I run these two rules across a sample pcap file, I get the following:
 
 ```
 Adding a `ip_proto:!6` to exclude all TCP and there is no discrepancy, so there are some approximately 800 packets in my test pcap where the simple lua script calculates a length differently than dsize.
+
+## Appendix B: Gotchas
+
+### Flowint
+When using `flowint: name, =, <value>`, it seems to set the value of the flowint to `<value>` instead of testing for equality. If you want to test for a specific flowint value (eg. 10), you can use: `flowint: name, >, 9; flowint: name, <, 11`.
